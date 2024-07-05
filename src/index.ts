@@ -142,7 +142,7 @@ export async function transcribeAndChat(chatHistory : any) {
         `Error: ${error.response.status} - ${error.response.statusText}`
       );
     } else {
-      console.error("Error:", error.message);
+      console.error("Errornb nb:", error.message);
     }
   }
 }
