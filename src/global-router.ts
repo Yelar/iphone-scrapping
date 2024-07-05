@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import userRouter from './user/user-router';
+import { interviewerRouter } from './interiewer/interviewer.router';
 // other routers can be imported here
 
 const globalRouter = Router();
 
-// Use the userRouter for user-related routes
-globalRouter.use(userRouter);
+globalRouter.use(interviewerRouter);
 
 // other routers can be added here
 
