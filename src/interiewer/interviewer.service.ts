@@ -1,7 +1,7 @@
-import { transcribeAndChat } from '..';
+import {  streamedAudio, transcribeAndChat } from '..';
 import openai from '../openai';
 import { CreateResponseDTO } from './dto/CreateResponse.dto';
-import { audioResponse } from './types/response';
+import { audioResponse} from './types/response';
 // import MessageModel, { IMessage } from './models/message';
 // import { AddMessageDto } from './dtos/AddMessageDto.dot';
 
@@ -21,7 +21,7 @@ class InterviewerService {
 //   }
   async create(userPrompt: string, callback: (data: any) => void) {
     const stream = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-3.5-turbo',
       messages: [
         {
           role: 'system',
@@ -60,9 +60,14 @@ class InterviewerService {
   async createResponse(resDto: CreateResponseDTO): Promise<audioResponse> {
     const tmp = await transcribeAndChat(resDto.chat);
     const newRes: audioResponse = {
-      chat: tmp,
+      chat: tmp?.chat,
+      curMessage: tmp?.curMessage
     };
     return newRes;
+  }
+  async createAudio(txt : string): Promise<any> {
+    const tmp = await streamedAudio(txt);
+    return tmp;
   }
 }
 

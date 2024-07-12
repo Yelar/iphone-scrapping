@@ -3,5 +3,5 @@ interface message {
     content: string;
 }
 export interface CreateResponseDTO {
-    chat: message[]; 
+    chat: message[];
 }

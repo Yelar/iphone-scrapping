@@ -1,5 +1,7 @@
 import InterviewerService from './interviewer.service';
 import { Socket } from 'socket.io';
+import { Readable } from 'stream'
+
 // import { AddMessageDto } from './dtos/AddMessageDto.dot';
 import { Request, Response } from 'express';
 import { CreateResponseDTO } from './dto/CreateResponse.dto';
@@ -11,11 +13,28 @@ class InterviewerController {
   constructor(interviewerService: InterviewerService) {
     this.interviewerService = interviewerService;
   }
-  createResponse = (req: Request, res: Response) => {
+  createResponse = async (req: Request, res: Response) => {
     try {
       const user: CreateResponseDTO = req.body;
-      const newUser = this.interviewerService.createResponse(user);
+      const newUser = await this.interviewerService.createResponse(user);
       res.status(201).json(newUser);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  createAudio = async (req: Request, res: Response) => {
+    try {
+      const {text} = req.params;
+      const audio = await this.interviewerService.createAudio(text);
+      if (!audio) {
+        res.status(404).json({ message: 'Song not found' })
+        return
+      }
+      const stream = Readable.from(audio);
+
+      
+      res.setHeader('Content-Type', 'audio/mp3')
+      stream.pipe(res);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

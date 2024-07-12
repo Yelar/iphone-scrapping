@@ -1,7 +1,8 @@
-interface message {
+export interface message {
     role: string;
     content: string;
 }
 export interface audioResponse {
-    chat: message[]; 
+    chat: message[];
+    curMessage: string; 
 }

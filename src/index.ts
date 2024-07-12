@@ -10,6 +10,7 @@ import axios from 'axios'
 import openai from './openai';
 import InterviewerController from './interiewer/interviewer.controller';
 import InterviewerService from './interiewer/interviewer.service';
+import { message } from './interiewer/types/response';
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -47,49 +48,51 @@ io.on("connection", (socket) => {
 });
 
 
-// // Default voice setting for text-to-speech
-// const inputVoice = "echo"; // https://platform.openai.com/docs/guides/text-to-speech/voice-options
-// const inputModel = "tts-1"; // https://platform.openai.com/docs/guides/text-to-speech/audio-quality
+// Default voice setting for text-to-speech
+const inputVoice = "echo"; // https://platform.openai.com/docs/guides/text-to-speech/voice-options
+const inputModel = "tts-1"; // https://platform.openai.com/docs/guides/text-to-speech/audio-quality
 
-// // Function to convert text to speech and play it using Speaker
-// async function streamedAudio(
-//   inputText,
-//   model = inputModel,
-//   voice = inputVoice
-// ) {
-//   const url = "https://api.openai.com/v1/audio/speech";
-//   const headers = {
-//     Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-//   };
+// Function to convert text to speech and play it using Speaker
+export async function streamedAudio(
+  inputText,
+  model = inputModel,
+  voice = inputVoice
+) {
+  const url = "https://api.openai.com/v1/audio/speech";
+  const headers = {
+    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+  };
 
-//   const data = {
-//     model: model,
-//     input: inputText,
-//     voice: voice,
-//     response_format: "mp3",
-//   };
+  const data = {
+    model: model,
+    input: inputText,
+    voice: voice,
+    response_format: "mp3",
+  };
 
-//   try {
-//     // Make a POST request to the OpenAI audio API
-//     const response = await axios.post(url, data, {
-//       headers: headers,
-//       responseType: "stream",
-//     });
+  try {
+    // Make a POST request to the OpenAI audio API
+    const response = await openai.audio.speech.create({
+      model: model,
+    input: inputText,
+    voice: "echo",
+    response_format: "mp3",
+      // responseType: "stream",
+    });
+    const buffer = Buffer.from(await response.arrayBuffer());
+    return buffer;
 
-//     //get req from front
-
-//   } catch (error : any) {
-//     // Handle errors from the API or the audio processing
-//     if (error.response) {
-//       console.error(
-//         `Error with HTTP request: ${error.response.status} - ${error.response.statusText}`
-//       );
-//     } else {
-//       console.error(`Error in streamedAudio: ${error.message}`);
-//     }
-//   }
-// }
-
+  } catch (error : any) {
+    // Handle errors from the API or the audio processing
+    if (error.response) {
+      console.error(
+        `Error with HTTP request: ${error.response.status} - ${error.response.statusText}`
+      );
+    } else {
+      console.error(`Error in streamedAudio: ${error.message}`);
+    }
+  }
+}
 
 
 export async function transcribeAndChat(chatHistory : any) {
@@ -97,7 +100,7 @@ export async function transcribeAndChat(chatHistory : any) {
   // note that the file size limitations are 25MB for Whisper
 
   // Prepare form data for the transcription request
-
+  
   try {
     // Post the audio file to OpenAI for transcription
     const transcriptionResponse = await openai.audio.transcriptions.create({
@@ -114,7 +117,7 @@ export async function transcribeAndChat(chatHistory : any) {
       {
         role: "system",
         content:
-          "You are an interviewer in the MAANG. You take interviews and evaluate participant. Your job is to conduct interview based on Leetcode question. ",
+          "You are the most harsh interviewer in MAANG. You take algotihmic interviews. You answer with short answers. No more than 2 sentences. For now, you will give 2-sum problem",
       },
       ...chatHistory,
       { role: "user", content: transcribedText },
@@ -123,18 +126,31 @@ export async function transcribeAndChat(chatHistory : any) {
     // Send messages to the chatbot and get the response
     const chatResponse = await openai.chat.completions.create({
       messages: messages,
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o",
     });
 
     // Extract the chat response.
     const chatResponseText = chatResponse.choices[0].message.content;
 
     // Update chat history with the latest interaction
-    chatHistory.push(
-      { role: "user", content: transcribedText },
-      { role: "interviewer", content: chatResponseText }
+    let temp : message[] = [];
+    temp.push(
+      { role: "user", content: transcribedText }
     );
-    return chatHistory;
+    if (chatResponseText)
+    temp.push(
+      { role: "assistant", content: chatResponseText }
+    );
+    
+    // const res = await streamedAudio(chatResponseText);
+    // console.log(res);
+    let answer : any;
+    if (chatResponseText)
+    answer = {
+      chat: temp,
+      curMessage: chatResponseText
+    }
+    return answer;
   } catch (error : any) {
     // Handle errors from the transcription or chatbot API
     if (error.response) {
