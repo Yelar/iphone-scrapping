@@ -1,7 +1,7 @@
 import {  streamedAudio, transcribeAndChat } from '..';
 import openai from '../openai';
 import { CreateResponseDTO } from './dto/CreateResponse.dto';
-import { audioResponse} from './types/response';
+import { audioResponse, evalResponse} from './types/response';
 // import MessageModel, { IMessage } from './models/message';
 // import { AddMessageDto } from './dtos/AddMessageDto.dot';
 
@@ -58,12 +58,48 @@ class InterviewerService {
     }
   }
   async createResponse(resDto: CreateResponseDTO): Promise<audioResponse> {
-    const tmp = await transcribeAndChat(resDto.chat);
+    const tmp = await transcribeAndChat(resDto.chat, resDto.currentStage);
     const newRes: audioResponse = {
       chat: tmp?.chat,
-      curMessage: tmp?.curMessage
+      curMessage: tmp?.curMessage,
+      isOver: tmp.isOver
     };
     return newRes;
+  }
+  async createEval(resDto: CreateResponseDTO): Promise<evalResponse | undefined> {
+    const messages : any = [
+      {
+        role: "system",
+        content:
+          `You are the most harsh interviewer in MAANG. You take algotihmic interviews. You answer with short answers.  For now, you will give 2-sum problem. You will be provided with interview transcript
+          Now, you evaluate interviewee's performance, even if interviewee did not completed an interview. 
+          All stages are over. You MUST return answer in following json format:
+          {
+            positive : string[] (Positive sides)
+            negative : string[] (negative sides)
+            suggestions: string (suggestions for the future)
+            chanceOfGettingJob: number (chance of getting into MAANG)
+          }
+          ` ,
+      },
+      ...resDto.chat,
+    ];
+    const response = await openai.chat.completions.create({
+      messages: messages,
+      model: "gpt-4o",
+      response_format: {
+        type: 'json_object',
+      }
+    });
+    const res = response.choices[0].message.content;
+    let Res : evalResponse;
+    if (res) {
+      console.log(res);
+      
+      Res = JSON.parse(res);
+      const newRes: evalResponse = Res;
+      return newRes;
+    }
   }
   async createAudio(txt : string): Promise<any> {
     const tmp = await streamedAudio(txt);

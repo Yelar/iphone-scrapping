@@ -4,4 +4,5 @@ interface message {
 }
 export interface CreateResponseDTO {
     chat: message[];
+    currentStage: number;
 }

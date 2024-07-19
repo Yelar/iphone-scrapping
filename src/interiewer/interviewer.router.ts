@@ -24,5 +24,6 @@ const interviewerController = new InterviewerController(interviewerService);
 
 interviewerRouter.post("/upload", upload.single('audio'), interviewerController.uploading);
 interviewerRouter.post("/response", interviewerController.createResponse);
+interviewerRouter.post("/analyse", interviewerController.createEval)
 interviewerRouter.get("/:text", interviewerController.createAudio);
 export { interviewerRouter };

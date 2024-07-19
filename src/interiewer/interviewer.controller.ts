@@ -7,6 +7,7 @@ import { Request, Response } from 'express';
 import { CreateResponseDTO } from './dto/CreateResponse.dto';
 
 
+
 class InterviewerController {
   private interviewerService: InterviewerService;
 
@@ -22,6 +23,18 @@ class InterviewerController {
       res.status(500).json({ error: error.message });
     }
   };
+  createEval = async (req: Request, res: Response) => {
+    try {
+      const user: CreateResponseDTO = req.body;
+      console.log(req.body);
+      
+      const newUser = await this.interviewerService.createEval(user);
+      res.status(201).json(newUser);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
   createAudio = async (req: Request, res: Response) => {
     try {
       const {text} = req.params;
@@ -39,9 +52,9 @@ class InterviewerController {
       res.status(500).json({ error: error.message });
     }
   };
-  async handleWebSocketConnection(ws: Socket, userPrompt: string) {
+  async handleWebSocketConnection(ws: Socket, Data: string) {
     try {
-      await this.interviewerService.create(userPrompt, (data) => {
+      await this.interviewerService.create(Data, (data) => {
         ws.send({
             role: "interviewer",
             content: data

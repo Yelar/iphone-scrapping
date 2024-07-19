@@ -29,7 +29,6 @@ const PORT = process.env.PORT || 3000;
 const corsOptions = {
   origin: 'http://localhost:3000'
 };
-
 app.use(cors(corsOptions));
 app.use(logger);
 app.use(express.json());
@@ -78,7 +77,8 @@ export async function streamedAudio(
     voice: "echo",
     response_format: "mp3",
       // responseType: "stream",
-    });
+
+    }); 
     const buffer = Buffer.from(await response.arrayBuffer());
     return buffer;
 
@@ -94,8 +94,25 @@ export async function streamedAudio(
   }
 }
 
+const prompts = [
+  `
+    0) problem initiation (You explain problem statement in short and participant asks clarifying questions and thinks of edge cases (if not, you tell him to do so))
+  `,
+  ` 
+    1) problem discussion (participant explains his solution (might be straightforward) -> However you hint the participant to explain a better solution, if not, it is ok)
+  `,
+  ` 
+    2) writing a code
+  `,
+  ` 
+    3) Time and space complexity discussion
+  `,
+  ` 
+    4) alternative approach discussion (Especially if participant's solution is not the best) (not mandatory, but if there is time left good thing to do)
+  ` 
+]
 
-export async function transcribeAndChat(chatHistory : any) {
+export async function transcribeAndChat(chatHistory : any, currentStage : number) {
   const filePath = "src/interiewer/uploads/recorded_audio.wav";
   // note that the file size limitations are 25MB for Whisper
 
@@ -105,19 +122,30 @@ export async function transcribeAndChat(chatHistory : any) {
     // Post the audio file to OpenAI for transcription
     const transcriptionResponse = await openai.audio.transcriptions.create({
       file: fs.createReadStream(filePath),
-      model: "whisper-1"
+      model: "whisper-1",
+      language: "en"
     });
-
     // Extract transcribed text from the response
     const transcribedText = transcriptionResponse.text;
     console.log(`>> You said: ${transcribedText}`);
-
     // Prepare messages for the chatbot, including the transcribed text
     const messages = [
       {
         role: "system",
         content:
-          "You are the most harsh interviewer in MAANG. You take algotihmic interviews. You answer with short answers. No more than 2 sentences. For now, you will give 2-sum problem",
+          `You are the most harsh interviewer in MAANG. You take algotihmic interviews. You answer with short answers. No more than 2 sentences. For now, you will give 2-sum problem.
+          There are 5 stages of an interview:
+          0) problem initiation (You explain problem statement in short and participant asks clarifying questions and thinks of edge cases (if not, you tell him to do so))
+          1) problem discussion (participant explains his solution (might be straightforward) -> However you hint the participant to explain a better solution, if not, it is ok)
+          2) writing a code
+          3) time and space complexity discussion
+          4) alternative approach discussion (Especially if participant's solution is not the best) (not mandatory, but if there is time left good thing to do)
+          Current stage is ${prompts[currentStage]}. You return answer in following json format:
+          {
+            gptResponse: (Text response to the current message),
+            isOver: (true or false, boolean type expression that return if the current stage is over if you think so)
+          }
+          ` ,
       },
       ...chatHistory,
       { role: "user", content: transcribedText },
@@ -127,11 +155,17 @@ export async function transcribeAndChat(chatHistory : any) {
     const chatResponse = await openai.chat.completions.create({
       messages: messages,
       model: "gpt-4o",
-    });
-
+      response_format: {
+        type: 'json_object',
+      }
+    }); 
+    
     // Extract the chat response.
     const chatResponseText = chatResponse.choices[0].message.content;
-
+    let result : any;
+    if (chatResponseText)
+    result = JSON.parse(chatResponseText);
+  
     // Update chat history with the latest interaction
     let temp : message[] = [];
     temp.push(
@@ -139,7 +173,7 @@ export async function transcribeAndChat(chatHistory : any) {
     );
     if (chatResponseText)
     temp.push(
-      { role: "assistant", content: chatResponseText }
+      { role: "assistant", content: result.gptResponse }
     );
     
     // const res = await streamedAudio(chatResponseText);
@@ -148,7 +182,8 @@ export async function transcribeAndChat(chatHistory : any) {
     if (chatResponseText)
     answer = {
       chat: temp,
-      curMessage: chatResponseText
+      curMessage: result.gptResponse,
+      isOver: result.isOver
     }
     return answer;
   } catch (error : any) {
