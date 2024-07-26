@@ -6,8 +6,6 @@ import { Readable } from 'stream'
 import { Request, Response } from 'express';
 import { CreateResponseDTO } from './dto/CreateResponse.dto';
 
-
-
 class InterviewerController {
   private interviewerService: InterviewerService;
 
@@ -34,7 +32,54 @@ class InterviewerController {
       res.status(500).json({ error: error.message });
     }
   };
-
+  getDescription = async (req: Request, res: Response) => {
+    try {
+      const {questionName} = req.params;
+      
+      const data = await this.interviewerService.getDescription(questionName);
+      res.status(201).json(data);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  getQuestionInfo = async (req: Request, res: Response) => {
+    try {
+      const {questionName} = req.params;
+      
+      const data = await this.interviewerService.getQuestionInfo(questionName);
+      if (!data) {
+          res.status(404).json({ message: 'question info not found' });
+          return
+      }
+      res.status(201).json(data);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  getSnippets = async (req: Request, res: Response) => {
+    try {
+      const {questionName} = req.params;
+      
+      const data = await this.interviewerService.getSnippets(questionName);
+      if (!data) res.status(404);
+      console.log(data);
+      res.status(201).json(data);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  getSolutions = async (req: Request, res: Response) => {
+    try {
+      const {questionName} = req.params;
+      
+      const data = await this.interviewerService.getSolutions(questionName);
+      if (!data) res.status(404);
+      console.log(data);
+      res.status(201).json(data);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
   createAudio = async (req: Request, res: Response) => {
     try {
       const {text} = req.params;
@@ -52,6 +97,14 @@ class InterviewerController {
       res.status(500).json({ error: error.message });
     }
   };
+  getProblems = async (req: Request, res: Response) => {
+    try {
+        const problems = await this.interviewerService.getAllProblems();
+        res.status(200).json(problems);
+    } catch (error) {
+        res.status(500).json({ message: error });
+    }
+};
   async handleWebSocketConnection(ws: Socket, Data: string) {
     try {
       await this.interviewerService.create(Data, (data) => {

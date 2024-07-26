@@ -1,0 +1,818 @@
+[
+    {
+        "company": "Google",
+        "problem_slug": "minimum-unique-word-abbreviation"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "split-array-largest-sum"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "valid-word-abbreviation"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "trapping-rain-water-ii"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "convert-a-number-to-hexadecimal"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "frog-jump"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "remove-k-digits"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "binary-watch"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "evaluate-division"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "random-pick-index"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "rotate-function"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "decode-string"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "is-subsequence"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "perfect-rectangle"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "find-the-difference"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "longest-absolute-file-path"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "ransom-note"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "linked-list-random-node"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "insert-delete-getrandom-o1"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "kth-smallest-element-in-a-sorted-matrix"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "combination-sum-iv"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "guess-number-higher-or-lower-ii"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "plus-one-linked-list"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "largest-divisible-subset"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "valid-perfect-square"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "find-leaves-of-binary-tree"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "design-hit-counter"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "logger-rate-limiter"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "rearrange-string-k-distance-apart"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "design-twitter"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "russian-doll-envelopes"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "design-snake-game"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "intersection-of-two-arrays"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "design-tic-tac-toe"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "top-k-frequent-elements"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "moving-average-from-data-stream"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "longest-substring-with-at-most-k-distinct-characters"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "counting-bits"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "house-robber-iii"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "palindrome-pairs"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "self-crossing"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "increasing-triplet-subsequence"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "reconstruct-itinerary"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "verify-preorder-serialization-of-a-binary-tree"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "number-of-connected-components-in-an-undirected-graph"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "coin-change"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "create-maximum-number"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "generalized-abbreviation"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "shortest-distance-from-all-buildings"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "count-of-smaller-numbers-after-self"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "super-ugly-number"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "burst-balloons"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "range-sum-query-2d-mutable"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "range-sum-query-mutable"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "number-of-islands-ii"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "range-sum-query-2d-immutable"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "smallest-rectangle-enclosing-black-pixels"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "bulls-and-cows"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "binary-tree-longest-consecutive-sequence"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "serialize-and-deserialize-binary-tree"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "best-meeting-point"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "flip-game-ii"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "flip-game"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "game-of-life"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "unique-word-abbreviation"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "find-the-duplicate-number"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "walls-and-gates"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "inorder-successor-in-bst"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "peeking-iterator"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "zigzag-iterator"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "perfect-squares"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "first-bad-version"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "paint-fence"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "h-index"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "closest-binary-search-tree-value-ii"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "alien-dictionary"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "palindrome-permutation-ii"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "graph-valid-tree"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "single-number-iii"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "binary-tree-paths"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "meeting-rooms-ii"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "meeting-rooms"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "count-univalue-subtrees"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "group-shifted-strings"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "strobogrammatic-number-iii"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "strobogrammatic-number-ii"
+    },
+    {
+        "company": "Google",
+        "problem_slug": "valid-anagram"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "count-hills-and-valleys-in-an-array"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "k-radius-subarray-averages"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "find-target-indices-after-sorting-array"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "process-restricted-friend-requests"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "minimum-operations-to-make-a-uni-value-grid"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "number-of-pairs-of-strings-with-concatenation-equal-to-target"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "find-the-middle-index-in-array"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "find-the-kth-largest-integer-in-the-array"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "remove-one-element-to-make-the-array-strictly-increasing"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "cutting-ribbons"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "check-if-the-sentence-is-pangram"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "faulty-sensor"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "check-if-one-string-swap-can-make-strings-equal"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "count-items-matching-a-rule"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "sum-of-unique-elements"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "swapping-nodes-in-a-linked-list"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "construct-the-lexicographically-largest-valid-sequence"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "check-if-two-string-arrays-are-equivalent"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "lowest-common-ancestor-of-a-binary-tree-iii"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "lowest-common-ancestor-of-a-binary-tree-ii"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "check-array-formation-through-concatenation"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "maximum-nesting-depth-of-the-parentheses"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "dot-product-of-two-sparse-vectors"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "minimum-insertions-to-balance-a-parentheses-string"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "kth-missing-positive-number"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "clone-binary-tree-with-random-pointer"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "maximum-product-of-two-elements-in-an-array"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "make-two-arrays-equal-by-reversing-sub-arrays"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "first-unique-number"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "leftmost-column-with-at-least-a-one"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "count-number-of-teams"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "balance-a-binary-search-tree"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "validate-binary-tree-nodes"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "apply-discount-every-n-orders"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "count-negative-numbers-in-a-sorted-matrix"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "angle-between-hands-of-a-clock"
+    },
+    {
+        "company": "Meta",
+        "problem_slug": "rank-transform-of-an-array"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "minimum-average-difference"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "minimum-rounds-to-complete-all-tasks"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "partition-array-according-to-given-pivot"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "minimum-sum-of-four-digit-number-after-splitting-digits"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "rearrange-array-elements-by-sign"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "minimum-swaps-to-group-all-1s-together-ii"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "maximum-twin-sum-of-a-linked-list"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "number-of-laser-beams-in-a-bank"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "check-if-a-parentheses-string-can-be-valid"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "number-of-smooth-descent-periods-of-a-stock"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "adding-spaces-to-a-string"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "two-furthest-houses-with-different-colors"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "decode-the-slanted-ciphertext"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "plates-between-candles"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "kth-distinct-string-in-an-array"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "number-of-valid-words-in-a-sentence"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "maximize-the-confusion-of-an-exam"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "sum-of-beauty-in-the-array"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "count-number-of-pairs-with-absolute-difference-k"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "minimize-the-difference-between-target-and-chosen-elements"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "find-unique-binary-string"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "find-if-path-exists-in-graph"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "array-with-elements-not-equal-to-average-of-neighbors"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "nearest-exit-from-entrance-in-maze"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "count-square-sum-triples"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "remove-all-occurrences-of-a-substring"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "longer-contiguous-segments-of-ones-than-zeros"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "maximum-average-pass-ratio"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "sort-features-by-popularity"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "minimum-number-of-operations-to-move-all-balls-to-each-box"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "form-array-by-concatenating-subarrays-of-another-array"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "check-if-array-is-sorted-and-rotated"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "maximum-absolute-sum-of-any-subarray"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "swapping-nodes-in-a-linked-list"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "count-good-meals"
+    },
+    {
+        "company": "Amazon",
+        "problem_slug": "maximum-units-on-a-truck"
+    },
+    {
+        "company": "Netflix",
+        "problem_slug": "rotating-the-box"
+    },
+    {
+        "company": "Netflix",
+        "problem_slug": "logger-rate-limiter"
+    },
+    {
+        "company": "Netflix",
+        "problem_slug": "reconstruct-itinerary"
+    },
+    {
+        "company": "Netflix",
+        "problem_slug": "best-time-to-buy-and-sell-stock"
+    },
+    {
+        "company": "Netflix",
+        "problem_slug": "valid-parentheses"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "check-if-numbers-are-ascending-in-a-sentence"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "build-array-from-permutation"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "minimum-operations-to-make-the-array-increasing"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "implement-trie-ii-prefix-tree"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "find-the-highest-altitude"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "partitioning-into-minimum-number-of-deci-binary-numbers"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "goal-parser-interpretation"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "check-if-two-string-arrays-are-equivalent"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "sum-of-all-odd-length-subarrays"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "number-of-sub-arrays-with-odd-sum"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "count-odd-numbers-in-an-interval-range"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "shuffle-the-array"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "consecutive-characters"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "create-target-array-in-the-given-order"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "lucky-numbers-in-a-matrix"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "product-of-the-last-k-numbers"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "number-of-steps-to-reduce-a-number-to-zero"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "decompress-run-length-encoded-list"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "deepest-leaves-sum"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "sequential-digits"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "group-the-people-given-the-group-size-they-belong-to"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "search-suggestions-system"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "minimum-time-visiting-all-points"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "remove-all-adjacent-duplicates-in-string-ii"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "unique-number-of-occurrences"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "day-of-the-week"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "height-checker"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "sum-of-root-to-leaf-binary-numbers"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "pairs-of-songs-with-total-durations-divisible-by-60"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "complement-of-base-10-integer"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "max-consecutive-ones-iii"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "find-the-town-judge"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "smallest-string-starting-from-leaf"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "distribute-coins-in-binary-tree"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "range-sum-of-bst"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "maximum-frequency-stack"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "find-and-replace-pattern"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "boats-to-save-people"
+    },
+    {
+        "company": "Apple",
+        "problem_slug": "middle-of-the-linked-list"
+    }
+]

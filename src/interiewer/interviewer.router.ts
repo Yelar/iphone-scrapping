@@ -26,4 +26,10 @@ interviewerRouter.post("/upload", upload.single('audio'), interviewerController.
 interviewerRouter.post("/response", interviewerController.createResponse);
 interviewerRouter.post("/analyse", interviewerController.createEval)
 interviewerRouter.get("/:text", interviewerController.createAudio);
+interviewerRouter.get('/all/problems', interviewerController.getProblems);
+interviewerRouter.get("/:questionName/description", interviewerController.getDescription);
+interviewerRouter.get("/:questionName/snippets", interviewerController.getSnippets);
+interviewerRouter.get("/:questionName/userSolutions", interviewerController.getSolutions);
+interviewerRouter.get("/:questionName/questionInfo", interviewerController.getQuestionInfo);
+
 export { interviewerRouter };
