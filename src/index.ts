@@ -21,7 +21,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://algoaim-ai.vercel.app",
     methods: ["GET", "POST"]
   }
 });
@@ -31,7 +31,7 @@ const interviewerController = new InterviewerController(interviewerService);
 
 const PORT = process.env.PORT || 3000;
 const corsOptions = {
-  origin: 'http://localhost:3000'
+  origin: 'https://algoaim-ai.vercel.app'
 };
 app.use(cors(corsOptions));
 app.use(logger);
