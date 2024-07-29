@@ -27,8 +27,8 @@ export interface questionSnippets {
     snippets: snippet[];
 }
 
-export interface questionSolutions {
-    solutions: string[];
+export interface questionSolution {
+    solution: string;
 }
 
 export interface questionInfo {

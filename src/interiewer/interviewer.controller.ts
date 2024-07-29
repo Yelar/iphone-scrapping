@@ -4,7 +4,7 @@ import { Readable } from 'stream'
 
 // import { AddMessageDto } from './dtos/AddMessageDto.dot';
 import { Request, Response } from 'express';
-import { CreateResponseDTO } from './dto/CreateResponse.dto';
+import { CreateResponseDTO, SolutionDTO } from './dto/CreateResponse.dto';
 
 class InterviewerController {
   private interviewerService: InterviewerService;
@@ -18,6 +18,26 @@ class InterviewerController {
       const newUser = await this.interviewerService.createResponse(user);
       res.status(201).json(newUser);
     } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  submitSolution = async (req: Request, res: Response) => {
+    try {
+      const data: SolutionDTO = req.body;
+      const ans = await this.interviewerService.submitSolution(data);
+      res.status(201).json(ans);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  checkSolution = async (req: Request, res: Response) => {
+    try {
+      const {submission_id} = req.params;
+      const id = Number(submission_id);
+      const ans = await this.interviewerService.checkSolution(id);
+      res.status(201).json(ans);
+    } catch (error: any) {
+      console.log("blya");
       res.status(500).json({ error: error.message });
     }
   };
@@ -71,9 +91,11 @@ class InterviewerController {
   getSolutions = async (req: Request, res: Response) => {
     try {
       const {questionName} = req.params;
+      console.log("DAL");
       
       const data = await this.interviewerService.getSolutions(questionName);
       if (!data) res.status(404);
+      
       console.log(data);
       res.status(201).json(data);
     } catch (error: any) {
@@ -105,13 +127,10 @@ class InterviewerController {
         res.status(500).json({ message: error });
     }
 };
-  async handleWebSocketConnection(ws: Socket, Data: string) {
+  async handleWebSocketConnection(ws: Socket, Data: any) {
     try {
       await this.interviewerService.create(Data, (data) => {
-        ws.send({
-            role: "interviewer",
-            content: data
-        });
+        ws.send(JSON.parse(data));
       });
     } catch (error) {
       ws.send(JSON.stringify({ error: 'Failed to process OpenAI stream' }));

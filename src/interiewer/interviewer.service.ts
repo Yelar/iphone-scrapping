@@ -1,13 +1,29 @@
-import {  getContent, getQuestionInfo, getSnippets, getSolutions, streamedAudio, transcribeAndChat } from '..';
+import {  checkSolution, getContent, getQuestionInfo, getSnippets, getSolutions, streamedAudio, submitSolution, transcribeAndChat } from '..';
 import openai from '../openai';
-import { CreateResponseDTO } from './dto/CreateResponse.dto';
+import { CreateResponseDTO, SolutionDTO } from './dto/CreateResponse.dto';
 import { Problem } from './Models/problem';
-import { audioResponse, evalResponse, questionDescription, questionInfo, questionSnippets, questionSolutions} from './types/response';
+import { audioResponse, evalResponse, questionDescription, questionInfo, questionSnippets, questionSolution} from './types/response';
 // import MessageModel, { IMessage } from './models/message';
 // import { AddMessageDto } from './dtos/AddMessageDto.dot';
+import fs from 'fs'
 
-
-
+const prompts = [
+  `
+    0) problem initiation (You explain problem statement in short and participant asks clarifying questions and thinks of edge cases (if not, you tell him to do so))
+  `,
+  ` 
+    1) problem discussion (participant explains his solution (might be straightforward) -> However you hint the participant to explain a better solution, if not, it is ok)
+  `,
+  ` 
+    2) writing a code
+  `,
+  ` 
+    3) Time and space complexity discussion
+  `,
+  ` 
+    4) alternative approach discussion (Especially if participant's solution is not the best) (not mandatory, but if there is time left good thing to do)
+  ` 
+]
 class InterviewerService {
 //   async addMessage(addMessageDto: AddMessageDto): Promise<IMessage> {
 //     const { message } = addMessageDto;
@@ -22,22 +38,32 @@ class InterviewerService {
 //   async getMessages(): Promise<(IMessage)[]> {
 //     return MessageModel.find();
 //   }
-  async create(userPrompt: string, callback: (data: any) => void) {
+  async create(userPrompt: any, callback: (data: any) => void) {
     const stream = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',
           content: `
-          You are an interviewer in the MAANG. You take interviews and evaluate participant. Your job is to conduct interview based on Leetcode question.  
-          `,
+          You are the most harsh interviewer in MAANG. You take coding algorithm and data structure interviews. You answer with short answers. No more than 2 sentences. For now, you will give be given a some problem. Here its sopution: ${userPrompt.solution}.
+          Remember, you asses only user, not assistant. There are 5 stages of an interview:
+          0) problem initiation (You explain problem statement in short and participant asks clarifying questions and thinks of edge cases (if not, you tell him to do so))
+          1) problem discussion (participant explains his solution (might be straightforward) -> However you hint the participant to explain a better solution, if not, it is ok)
+          2) writing a code
+          3) time and space complexity discussion
+          4) alternative approach discussion (Especially if participant's solution is not the best) (not mandatory, but if there is time left good thing to do)
+          Current stage is ${prompts[userPrompt.currentStage]}. You return answer in following json format:
+          {
+            gptResponse: (Text response to the current message),
+            isOver: (true or false, boolean type expression that return if the current stage is over if you think so)
+          }`,
         },
-        {
-          role: 'user',
-          content: userPrompt,
-        },
+        ...userPrompt.chat,
       ],
       stream: true,
+      response_format: {
+        type: 'json_object',
+      }
     });
     try {
       let gptResponse = "";
@@ -47,10 +73,11 @@ class InterviewerService {
           const content = chunk.choices[0].delta.content;
           if (Object.keys(content).length !== 0) {  // This checks if content is non-empty
             gptResponse += content;
-            callback(content);
+            
           }
         }
       }
+      callback(gptResponse);
 
     //   await this.addMessage({
     //     message: gptResponse,
@@ -61,12 +88,23 @@ class InterviewerService {
     }
   }
   async createResponse(resDto: CreateResponseDTO): Promise<audioResponse> {
-    const tmp = await transcribeAndChat(resDto.base64, resDto.chat, resDto.currentStage);
+    const tmp = await transcribeAndChat(resDto.base64, resDto.chat, resDto.currentStage, resDto.code, resDto.solution);
     const newRes: audioResponse = {
       chat: tmp?.chat,
       curMessage: tmp?.curMessage,
       isOver: tmp.isOver
     };
+    return newRes;
+  }
+  async submitSolution(resDto: SolutionDTO): Promise<any> {
+    const {questionName, language_slug, questionId, solution_code} = resDto;
+    const tmp = await submitSolution(questionName, language_slug, questionId, solution_code);
+    const newRes: any = tmp;
+    return newRes;
+  }
+  async checkSolution(submission_id: number): Promise<any> {
+    const tmp = await checkSolution(submission_id);
+    const newRes: any = tmp;
     return newRes;
   }
   async getDescription(questionName : string): Promise<questionDescription> {
@@ -76,6 +114,7 @@ class InterviewerService {
     };
     return newRes;
   }
+  
   async getQuestionInfo(questionName : string): Promise<questionInfo | null> {
     const tmp = await getQuestionInfo(questionName);
     if (!tmp) return null;
@@ -90,11 +129,11 @@ class InterviewerService {
     };
     return newRes;
   }
-  async getSolutions(questionName : string): Promise<questionSolutions | null> {
+  async getSolutions(questionName : string): Promise<questionSolution | null> {
     const tmp = await getSolutions(questionName);
     if (!tmp) return null;
-    const newRes: questionSolutions = {
-      solutions: tmp
+    const newRes: questionSolution = {
+      solution: tmp
     };
     return newRes;
   }
@@ -104,9 +143,9 @@ class InterviewerService {
         role: "system",
         content:
           `
-          You are the most harsh interviewer in MAANG. You take algotihmic interviews. You answer with short answers.  For now, you will give 2-sum problem. You will be provided with interview transcript
+          You are the most harsh interviewer in MAANG. You take algotihmic interviews. You answer with short answers. You will be provided with interview transcript
           Now, you evaluate interviewee's performance, even if interviewee did not completed an interview. 
-          All stages are over. You MUST return answer in following json format:
+         . You MUST return answer in following json format:
           {
             positive : string[] (Positive sides)
             negative : string[] (negative sides)
@@ -119,7 +158,7 @@ class InterviewerService {
     ];
     const response = await openai.chat.completions.create({
       messages: messages,
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       response_format: {
         type: 'json_object',
       }
@@ -140,8 +179,10 @@ class InterviewerService {
   }
   getAllProblems = async () => {
     try {
-        const problems = await Problem.find();
-        return problems;
+        const data = fs.readFileSync('src/interiewer/uploads/problems.json', 'utf8');
+        const problems = JSON.parse(data);
+
+        return problems.data.problemsetQuestionList.questions;
     } catch (error) {
         throw new Error(`Error fetching problems: ${error}`);
     }

@@ -16,7 +16,7 @@ import InterviewerService from './interiewer/interviewer.service';
 import { message, questionInfo, questionSnippets, snippet } from './interiewer/types/response';
 import { Readable } from "stream";
 import connectDB from './db';
-connectDB();
+// connectDB();
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -45,9 +45,8 @@ io.on("connection", (socket) => {
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
-  socket.on('message', async (message: string) => {
-    const userPrompt = message.toString();
-    await interviewerController.handleWebSocketConnection(socket, userPrompt);
+  socket.on('message', async (message: any) => {
+    await interviewerController.handleWebSocketConnection(socket, message);
   });
 });
 
@@ -117,7 +116,7 @@ const prompts = [
   ` 
 ]
 
-export async function transcribeAndChat(base64Audio: string, chatHistory : any, currentStage : number) {
+export async function transcribeAndChat(base64Audio: string, chatHistory : any, currentStage : number, code: string, solution: string) {
 
   // Prepare form data for the transcription request
 
@@ -143,8 +142,8 @@ export async function transcribeAndChat(base64Audio: string, chatHistory : any, 
       {
         role: "system",
         content:
-          `You are the most harsh interviewer in MAANG. You take algotihmic interviews. You answer with short answers. No more than 2 sentences. For now, you will give 2-sum problem.
-          There are 5 stages of an interview:
+          `You are the most harsh interviewer in MAANG. You take coding algorithm and data structure interviews. You answer with short answers. No more than 2 sentences. For now, you will give be given a some problem. Here its sopution: ${solution}.
+          Remember, you asses only user, not assistant. There are 5 stages of an interview:
           0) problem initiation (You explain problem statement in short and participant asks clarifying questions and thinks of edge cases (if not, you tell him to do so))
           1) problem discussion (participant explains his solution (might be straightforward) -> However you hint the participant to explain a better solution, if not, it is ok)
           2) writing a code
@@ -158,7 +157,8 @@ export async function transcribeAndChat(base64Audio: string, chatHistory : any, 
           ` ,
       },
       ...chatHistory,
-      { role: "user", content: transcribedText },
+      { role: "user", content: transcribedText + `here is the code of the interviewee if the stage is coding: ${code}` },
+    
     ];
 
     // Send messages to the chatbot and get the response
@@ -479,7 +479,7 @@ export const getContent = async (name : string) => {
         'sentry-trace': 'ed8a4a703d2e4cdfa47380861f3de074-875cdb1b04eb8b27-0',
         'x-csrftoken': '3dsQEpDTxQbiEjQWWlQBE5smjHCx05Q2hn0pj4P7Lp3TT4vIgvYH7ckqG4tG5hlG',
         'cookie': 'csrftoken=3dsQEpDTxQbiEjQWWlQBE5smjHCx05Q2hn0pj4P7Lp3TT4vIgvYH7ckqG4tG5hlG; INGRESSCOOKIE=2007899e6c10bf1c1694a6b84d1b9fca|8e0876c7c1464cc0ac96bc2edceabd27; ip_check=(false, "89.250.86.68"); *gid=GA1.2.961337067.1720152357; *gat=1; *ga=GA1.1.1907198444.1720152357; gr*user_id=6298d9f0-d9a0-439d-9b78-9fc48ee4fc82; 87b5a3c3f1a55520_gr_session_id=42cbfa09-d4d8-4f14-b09c-561ddb68b7e2; 87b5a3c3f1a55520_gr_session_id_sent_vst=42cbfa09-d4d8-4f14-b09c-561ddb68b7e2; __cf_bm=WCtqNlQV7s2BD.cNqNJKtKSOJatJuKG1c5GCM_7yPTY-1720152384-1.0.1.1-CVqxsvF1SUTKF.6sSOjXqyA1sQT8iws91JqGWFV32oWRsyAASiXJ0O5vFM1.cB4f6okbFRe1oHWHlvtJwcZiKQ; *ga*CDRWKZTDEX=GS1.1.1720152357.1.0.1720152383.34.0.0',
-        'Referer': 'https://leetcode.com/problems/maximum-sum-of-subsequence-with-non-adjacent-elements/description/',
+        'Referer': `https://leetcode.com/problems/${name}}/description/`,
         'Referrer-Policy': 'strict-origin-when-cross-origin'
       },
       data: {
@@ -577,13 +577,13 @@ export const getSnippets = async (name : string): Promise<snippet[] | undefined>
 
 export const submitSolution = async (name: string, language_slug:string, questionId: string, solution:string) => {
   try {
-    const response = await axios.post('https://leetcode.com/problems/two-sum/submit/', {
+    const response = await axios.post(`https://leetcode.com/problems/${name}/submit/`, {
       lang: language_slug,
       question_id: questionId,
       typed_code: solution
     }, {
       headers: {
-        "user-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:123.0) Gecko/20100101 Firefox/123.0",
+        "user-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
         "accept": "*/*",
         "accept-language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
         "cache-control": "no-cache",
@@ -596,9 +596,9 @@ export const submitSolution = async (name: string, language_slug:string, questio
         "sec-fetch-dest": "empty",
         "sec-fetch-mode": "cors",
         "sec-fetch-site": "same-origin",
-        "x-csrftoken": "8rRYsFisooo10A5RhwkNnAhQDFkUvVbwdgh9I0riZBKGJp6Hlk2zpz8zJvwhk24V",
-        "cookie": "__stripe_mid=d5dbf79b-292f-4a6c-91ee-8c96671f087909f118; __eoi=ID=6ba8d4474d5c8987:T=1716656075:RT=1716677304:S=AA-AfjaeGU5YLNhMynCPy4r1Fstt; 87b5a3c3f1a55520_gr_cs1=yelarys; _ga=GA1.1.465830316.1719319180; _ga_CDRWKZTDEX=GS1.1.1719319180.1.0.1719319180.60.0.0; ip_check=(false, \"95.56.238.194\"); cf_clearance=zzRmcpGXMxBpM1AUZZSjHR2lgx68p8hgQvHJ0mqUjfQ-1721918992-1.0.1.1-4ejMI_FktyxiIkcwV77EtmJknFdymI2ciUR0ESu_Syda.wHzJ4yVYvdJ3KhVWn4MpEmWCEXhlE1o3WukmaA.OA; csrftoken=8rRYsFisooo10A5RhwkNnAhQDFkUvVbwdgh9I0riZBKGJp6Hlk2zpz8zJvwhk24V; messages=.eJyLjlaKj88qzs-Lz00tLk5MT1XSMdAxMtVRCi5NTgaKpJXm5FQqFGem56WmKGTmKSQWK1Sm5iQWVRbrKcXq0ERzZH6pQkZiWSpMY35pyVCyKxYAUg50JQ:1sWzn2:ap8G1T2TJ9pX9WpkBpFB2FQ438hDQ5iuXVCKTPyhMkU; INGRESSCOOKIE=43e2b5b24e18a632f4c5bb7d142ac8a7|8e0876c7c1464cc0ac96bc2edceabd27; LEETCODE_SESSION=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiMzgxMDczNyIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiZWIyMDU3M2UxYjllMmIwYmE4MWZjYWFhMWJmZmU1MzA3ZDk2OTA5NjA1ZWU1OWEwZDkyMjE3YjM2ZmNlMjA4NSIsImlkIjozODEwNzM3LCJlbWFpbCI6ImVsYXJ5c2VydGFqQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoieWVsYXJ5cyIsInVzZXJfc2x1ZyI6InllbGFyeXMiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jb20vdXNlcnMvZGVmYXVsdF9hdmF0YXIuanBnIiwicmVmcmVzaGVkX2F0IjoxNzIxOTE4OTk2LCJpcCI6IjE3Ni42NC4yOC43NSIsImlkZW50aXR5IjoiMTBmOTI4N2RlYWY2MDllZTM2ZmIzNzc4M2YyYjg5YzAiLCJkZXZpY2Vfd2l0aF9pcCI6WyI5ZDk3ZWE1YjZhOTYwOTg3YjllMzcxNjVhMTc1ZjA1ZiIsIjE3Ni42NC4yOC43NSJdLCJzZXNzaW9uX2lkIjo2NzAzODM2MCwiX3Nlc3Npb25fZXhwaXJ5IjoxMjA5NjAwfQ.UMdIOaCIfn2chsv3SiE64nYqBthB1Uhnf9XWpd-8zuM; __cf_bm=.O8qfORNovcY8PJWEWCwzSLJLXhCR1HU2aLmy3Dme5I-1721963679-1.0.1.1-bqn46jTlqdxWv_jfRhFF_WgPUjxmMDGPvmVNftHX8st4z0TwEH8GD.bYrm4JQ2PeNCrKTosvZnBShHLP1OQe9w; _dd_s=rum=0&expire=1721964592042",
-        "Referer": `https://leetcode.com/problems/${name}/description/`,
+        "x-csrftoken": "OZfu8JjfZGynDGOFiB7SpX6C3M1aiWqgkxNAFmzc3g46dKHJ5cd8NfDs3XOtno0M",
+      "cookie": "__stripe_mid=d5dbf79b-292f-4a6c-91ee-8c96671f087909f118; __eoi=ID=6ba8d4474d5c8987:T=1716656075:RT=1716677304:S=AA-AfjaeGU5YLNhMynCPy4r1Fstt; 87b5a3c3f1a55520_gr_cs1=yelarys; _ga=GA1.1.465830316.1719319180; _ga_CDRWKZTDEX=GS1.1.1719319180.1.0.1719319180.60.0.0; ip_check=(false, \"85.117.108.110\"); cf_clearance=K3NdrvpYcI5thuGAodfpJZCHm2PH7dCJMqwerpKfWvg-1722197980-1.0.1.1-NvsxRqoO7q8BSMwJX1pmfNnvel4jBRk6Jm4pEG_VaKjSX08_KLc1Lk4bNisFsQ5x4kr.eCsHpSR0njf0oHMSew; csrftoken=OZfu8JjfZGynDGOFiB7SpX6C3M1aiWqgkxNAFmzc3g46dKHJ5cd8NfDs3XOtno0M; messages=.eJyLjlaKj88qzs-Lz00tLk5MT1XSMdAxMtVRCi5NTgaKpJXm5FQqFGem56WmKGTmKSQWK1Sm5iQWVRbrKcXq0ERzZH6pQkZiWSpMY35pyahdg9iuwebQWABhnvdB:1sYAMz:rSGycf5QbKdcWy3OULCkNMNrQiH2DEybhnOghZa4NI0; INGRESSCOOKIE=1cd6cae7c58c39f751a727d06865df06|8e0876c7c1464cc0ac96bc2edceabd27; __cf_bm=1sM9epUAUnK0i4Rm2rnkJntuFcfKU.Np1Zq8xfSR5vI-1722241673-1.0.1.1-nSL.cNl4v5Gdzx9zL8xxwcDcNovpIyarElTIpHU7CUxbNcM.bx_cmrvcskbuHBDJZ7oiPZ2Q1_Ukk8AW_kGnlg; LEETCODE_SESSION=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiMzgxMDczNyIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiZWIyMDU3M2UxYjllMmIwYmE4MWZjYWFhMWJmZmU1MzA3ZDk2OTA5NjA1ZWU1OWEwZDkyMjE3YjM2ZmNlMjA4NSIsImlkIjozODEwNzM3LCJlbWFpbCI6ImVsYXJ5c2VydGFqQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoieWVsYXJ5cyIsInVzZXJfc2x1ZyI6InllbGFyeXMiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jb20vdXNlcnMvZGVmYXVsdF9hdmF0YXIuanBnIiwicmVmcmVzaGVkX2F0IjoxNzIyMTk3OTkzLCJpcCI6Ijg5LjI1MC44Ni42OCIsImlkZW50aXR5IjoiNmEyMzc3NTcyOWZkNmMwNjhkMjBkMzgzY2JlMjdmOWIiLCJkZXZpY2Vfd2l0aF9pcCI6WyI2ODliOTFlNWU4MWY4NDg0MTdjYjIxNTBmZmMwYzBiZSIsIjg5LjI1MC44Ni42OCJdLCJzZXNzaW9uX2lkIjo2NzM3OTI0NywiX3Nlc3Npb25fZXhwaXJ5IjoxMjA5NjAwfQ.h8Fn_jz0jxsid1LNm1ykO_dygmittURdmadFXEeAGMA",
+      "Referer": `https://leetcode.com/problems/${name}/description/`,
         "Referrer-Policy": "strict-origin-when-cross-origin"
       }
     })
@@ -610,54 +610,61 @@ export const submitSolution = async (name: string, language_slug:string, questio
   }
 };
 
-const checkSolution = async (name: string, submission_id: number) => {
+export const checkSolution = async (submission_id: number) => {
+  const res = `https://leetcode.com/submissions/detail/${submission_id}/check/`;
+  console.log(res);
+  
   try {
-    const response = await axios.get(`https://leetcode.com/submissions/detail/${submission_id}}/check/`, {
+    const response = await axios.get(res, {
       headers: {
-        "user-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:123.0) Gecko/20100101 Firefox/123.0",
-        "accept": "*/*",
-        "accept-language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
-        "cache-control": "no-cache",
-        "content-type": "application/json",
-        "priority": "u=1, i",
-        "sec-ch-ua": "\"Not/A)Brand\";v=\"8\", \"Chromium\";v=\"126\"",
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": "\"macOS\"",
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        "x-csrftoken": "8rRYsFisooo10A5RhwkNnAhQDFkUvVbwdgh9I0riZBKGJp6Hlk2zpz8zJvwhk24V",
-    "cookie": "__stripe_mid=d5dbf79b-292f-4a6c-91ee-8c96671f087909f118; __eoi=ID=6ba8d4474d5c8987:T=1716656075:RT=1716677304:S=AA-AfjaeGU5YLNhMynCPy4r1Fstt; 87b5a3c3f1a55520_gr_cs1=yelarys; _ga=GA1.1.465830316.1719319180; _ga_CDRWKZTDEX=GS1.1.1719319180.1.0.1719319180.60.0.0; ip_check=(false, \"95.56.238.194\"); cf_clearance=zzRmcpGXMxBpM1AUZZSjHR2lgx68p8hgQvHJ0mqUjfQ-1721918992-1.0.1.1-4ejMI_FktyxiIkcwV77EtmJknFdymI2ciUR0ESu_Syda.wHzJ4yVYvdJ3KhVWn4MpEmWCEXhlE1o3WukmaA.OA; csrftoken=8rRYsFisooo10A5RhwkNnAhQDFkUvVbwdgh9I0riZBKGJp6Hlk2zpz8zJvwhk24V; messages=.eJyLjlaKj88qzs-Lz00tLk5MT1XSMdAxMtVRCi5NTgaKpJXm5FQqFGem56WmKGTmKSQWK1Sm5iQWVRbrKcXq0ERzZH6pQkZiWSpMY35pyVCyKxYAUg50JQ:1sWzn2:ap8G1T2TJ9pX9WpkBpFB2FQ438hDQ5iuXVCKTPyhMkU; INGRESSCOOKIE=43e2b5b24e18a632f4c5bb7d142ac8a7|8e0876c7c1464cc0ac96bc2edceabd27; LEETCODE_SESSION=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiMzgxMDczNyIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiZWIyMDU3M2UxYjllMmIwYmE4MWZjYWFhMWJmZmU1MzA3ZDk2OTA5NjA1ZWU1OWEwZDkyMjE3YjM2ZmNlMjA4NSIsImlkIjozODEwNzM3LCJlbWFpbCI6ImVsYXJ5c2VydGFqQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoieWVsYXJ5cyIsInVzZXJfc2x1ZyI6InllbGFyeXMiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jb20vdXNlcnMvZGVmYXVsdF9hdmF0YXIuanBnIiwicmVmcmVzaGVkX2F0IjoxNzIxOTE4OTk2LCJpcCI6IjE3Ni42NC4yOC43NSIsImlkZW50aXR5IjoiMTBmOTI4N2RlYWY2MDllZTM2ZmIzNzc4M2YyYjg5YzAiLCJkZXZpY2Vfd2l0aF9pcCI6WyI5ZDk3ZWE1YjZhOTYwOTg3YjllMzcxNjVhMTc1ZjA1ZiIsIjE3Ni42NC4yOC43NSJdLCJzZXNzaW9uX2lkIjo2NzAzODM2MCwiX3Nlc3Npb25fZXhwaXJ5IjoxMjA5NjAwfQ.UMdIOaCIfn2chsv3SiE64nYqBthB1Uhnf9XWpd-8zuM; __cf_bm=.O8qfORNovcY8PJWEWCwzSLJLXhCR1HU2aLmy3Dme5I-1721963679-1.0.1.1-bqn46jTlqdxWv_jfRhFF_WgPUjxmMDGPvmVNftHX8st4z0TwEH8GD.bYrm4JQ2PeNCrKTosvZnBShHLP1OQe9w; _dd_s=rum=0&expire=1721964592042",
-        "Referer": `https://leetcode.com/problems/${name}/description/`,
-        "Referrer-Policy": "strict-origin-when-cross-origin"
+        'accept': '*/*',
+        'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+        'cache-control': 'no-cache',
+        'content-type': 'application/json',
+        'pragma': 'no-cache',
+        'priority': 'u=1, i',
+        'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        "x-csrftoken": "OZfu8JjfZGynDGOFiB7SpX6C3M1aiWqgkxNAFmzc3g46dKHJ5cd8NfDs3XOtno0M",
+      "cookie": "__stripe_mid=d5dbf79b-292f-4a6c-91ee-8c96671f087909f118; __eoi=ID=6ba8d4474d5c8987:T=1716656075:RT=1716677304:S=AA-AfjaeGU5YLNhMynCPy4r1Fstt; 87b5a3c3f1a55520_gr_cs1=yelarys; _ga=GA1.1.465830316.1719319180; _ga_CDRWKZTDEX=GS1.1.1719319180.1.0.1719319180.60.0.0; __cf_bm=DppXaYXhcpCKpHWizAf8ZfzRnV6_G3RW6Fku_CFBnWc-1722197903-1.0.1.1-vAIsTEwaOdTya9.3gjDj9wszHiGK8am.80lJ4JPseBgP2O28SLr8j.EM0ntra3pZm3DkmRvF.5GldyFIZaH3SA; ip_check=(false, \"85.117.108.110\"); cf_clearance=K3NdrvpYcI5thuGAodfpJZCHm2PH7dCJMqwerpKfWvg-1722197980-1.0.1.1-NvsxRqoO7q8BSMwJX1pmfNnvel4jBRk6Jm4pEG_VaKjSX08_KLc1Lk4bNisFsQ5x4kr.eCsHpSR0njf0oHMSew; csrftoken=OZfu8JjfZGynDGOFiB7SpX6C3M1aiWqgkxNAFmzc3g46dKHJ5cd8NfDs3XOtno0M; messages=.eJyLjlaKj88qzs-Lz00tLk5MT1XSMdAxMtVRCi5NTgaKpJXm5FQqFGem56WmKGTmKSQWK1Sm5iQWVRbrKcXq0ERzZH6pQkZiWSpMY35pyahdg9iuwebQWABhnvdB:1sYAMz:rSGycf5QbKdcWy3OULCkNMNrQiH2DEybhnOghZa4NI0; LEETCODE_SESSION=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiMzgxMDczNyIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiZWIyMDU3M2UxYjllMmIwYmE4MWZjYWFhMWJmZmU1MzA3ZDk2OTA5NjA1ZWU1OWEwZDkyMjE3YjM2ZmNlMjA4NSIsImlkIjozODEwNzM3LCJlbWFpbCI6ImVsYXJ5c2VydGFqQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoieWVsYXJ5cyIsInVzZXJfc2x1ZyI6InllbGFyeXMiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jb20vdXNlcnMvZGVmYXVsdF9hdmF0YXIuanBnIiwicmVmcmVzaGVkX2F0IjoxNzIyMTk3OTkzLCJpcCI6Ijg1LjExNy4xMDguMTEwIiwiaWRlbnRpdHkiOiI2YTIzNzc1NzI5ZmQ2YzA2OGQyMGQzODNjYmUyN2Y5YiIsImRldmljZV93aXRoX2lwIjpbIjY4OWI5MWU1ZTgxZjg0ODQxN2NiMjE1MGZmYzBjMGJlIiwiODUuMTE3LjEwOC4xMTAiXSwic2Vzc2lvbl9pZCI6NjczNzkyNDcsIl9zZXNzaW9uX2V4cGlyeSI6MTIwOTYwMH0.BsSZkE2yRYencapuOVg2ASqrBv6sXdLP9X4zoAJv6gU; _dd_s=rum=0&expire=1722198892244; INGRESSCOOKIE=1cd6cae7c58c39f751a727d06865df06|8e0876c7c1464cc0ac96bc2edceabd27",
       }
-    });
-    console.log(response.data);
+    })
     return response.data;
   } catch (error) {
     console.error('Error submitting the solution:', error);
     throw error;
   }
 };
-submitSolution("two-sum", "cpp", '1', `class Solution {
-public:
-    int minimumCardPickup(vector<int>& cards) {
-  cout << "hello\n\n\n\n\n\n world";      
-    }
-};`);
+
 
 //returns at most 5 most popular solutions
 export const getSolutions = async (questionName : string) => {
   const ids = await getSolutionIds(questionName);
   
-  let ans : string[] = [];
+  let ans : string = "";
   for (let i = 0; i < ids.length; i++) {
-    const tmp = await getSolutionById(ids[i].id)
-    ans.push(tmp);
+    const tmp = await getSolutionById(ids[i].id);
+    ans += '\n';
+    ans += tmp;
     
   }
+  const chatResponse = await openai.chat.completions.create({
+    messages: [{
+        role: "system",
+        content:
+          `You are the most skillful competitive programmer and leetcode solver. You will be given a user's solutions to the particular leetcode problem. Generate clear and concise solution from them. Here it is ${ans}
+          ` ,
+      }],
+    model: "gpt-4o-mini"
+  }); 
+  const t = chatResponse.choices[0].message.content;
+  if (t)ans = t;
   // console.log(await getSnippets("two-sum"));
-  
+  console.log(ans);
   return ans;
 }
 
