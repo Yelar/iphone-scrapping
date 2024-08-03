@@ -107,12 +107,20 @@ class InterviewerService {
     const newRes: any = tmp;
     return newRes;
   }
-  async getDescription(questionName : string): Promise<questionDescription> {
-    const tmp = await getContent(questionName);
-    const newRes: questionDescription = {
-      content: tmp
-    };
-    return newRes;
+  async getDescription(questionName : string): Promise<questionDescription | null> {
+    const problemsPath = 'src/interiewer/uploads/descriptions.json';
+    const problemsData = fs.readFileSync(problemsPath, 'utf8');
+    const descriptions = JSON.parse(problemsData);
+    for (const cur of descriptions) {
+      const {title, description} = cur;
+      if (title === questionName) {
+        const newRes: questionDescription = {
+          content: description
+        };
+        return newRes;
+      }
+    }
+    return null;
   }
   
   async getQuestionInfo(questionName : string): Promise<questionInfo | null> {
@@ -122,20 +130,37 @@ class InterviewerService {
     return newRes;
   }
   async getSnippets(questionName : string): Promise<questionSnippets | null> {
-    const tmp = await getSnippets(questionName);
-    if (!tmp) return null;
+    const problemsPath = 'src/interiewer/uploads/snippets.json';
+    const problemsData = fs.readFileSync(problemsPath, 'utf8');
+    const snippets = JSON.parse(problemsData);
+    for (const cur of snippets) {
+      const {title, snippets} = cur;
+      if (title === questionName) {
+        const tmp = snippets;
     const newRes: questionSnippets = {
       snippets: tmp
     };
     return newRes;
+      }
+    }
+    return null;
   }
   async getSolutions(questionName : string): Promise<questionSolution | null> {
-    const tmp = await getSolutions(questionName);
-    if (!tmp) return null;
-    const newRes: questionSolution = {
-      solution: tmp
-    };
-    return newRes;
+   
+    const problemsPath = 'src/interiewer/uploads/solutions.json';
+    const problemsData = fs.readFileSync(problemsPath, 'utf8');
+    const solutions = JSON.parse(problemsData);
+    for (const cur of solutions) {
+      const {title, solution} = cur;
+      if (title === questionName) {
+        const tmp = solution;
+        const newRes: questionSolution = {
+          solution: tmp
+        };
+        return newRes;
+      }
+    }
+    return null;
   }
   async createEval(resDto: CreateResponseDTO): Promise<evalResponse | undefined> {
     const messages : any = [
@@ -144,13 +169,13 @@ class InterviewerService {
         content:
           `
           You are the most harsh interviewer in MAANG. You take algotihmic interviews. You answer with short answers. You will be provided with interview transcript
-          Now, you evaluate interviewee's performance, even if interviewee did not completed an interview. 
+          Now, you evaluate user's performance, even if interviewee did not completed an interview. Remember, you evaluate only a user's performance on the interview, not assistant. 
          . You MUST return answer in following json format:
           {
-            positive : string[] (Positive sides)
-            negative : string[] (negative sides)
-            suggestions: string (suggestions for the future)
-            chanceOfGettingJob: number (chance of getting into MAANG)
+            positive : string[] (Positive sides(You can elaborate on them))
+            negative : string[] (negative sides(You can elaborate on them))
+            suggestions: string (suggestions for the future. Also here you can tell how to avoid mistakes and show how could the user do it to not to repeat mistakes)
+            chanceOfGettingJob: number (chance of getting into MAANG. 80-100% is good, while 50-79 and below is considered bad)
           }
           ` ,
       },

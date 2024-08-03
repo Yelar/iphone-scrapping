@@ -80,7 +80,6 @@ export async function streamedAudio(
     input: inputText,
     voice: "echo",
     response_format: "mp3",
-      // responseType: "stream",
 
     }); 
     const buffer = Buffer.from(await response.arrayBuffer());
@@ -498,7 +497,6 @@ export const getContent = async (name : string) => {
         operationName: 'questionContent'
       }
     });
-    console.log(res.data.data);
     
     return res.data.data.question.content;
   } catch(err) {
@@ -664,34 +662,61 @@ export const getSolutions = async (questionName : string) => {
   const t = chatResponse.choices[0].message.content;
   if (t)ans = t;
   // console.log(await getSnippets("two-sum"));
-  console.log(ans);
   return ans;
 }
 
-
-// Define the Mongoose schema and model
-
-// // Function to save JSON data to MongoDB
-// async function saveProblemsFromFile(filePath) {
+// async function processProblems() {
 //   try {
-//     // Read the JSON file
-//     const data = fs.readFileSync(filePath, 'utf8');
-//     const problems = JSON.parse(data);
+//     // Read the problems.json file
+//     const problemsPath = 'src/interiewer/uploads/problems.json';
+//     const problemsData = fs.readFileSync(problemsPath, 'utf8');
+//     const problems = JSON.parse(problemsData);
 
-//     // Delete existing documents to avoid duplicates (optional)
-//     await Problem.deleteMany({});
+//     // Extract the questions array
+//     const questions = problems.data.problemsetQuestionList.questions;
 
-//     // Insert new documents
-//     await Problem.insertMany(problems);
-//     console.log('Problems saved successfully');
+//     // Array to store all problem descriptions
+//     const allDescriptions : any = [];
+
+//     // Process each question
+//     for (const question of questions) {
+//       const { titleSlug } = question;
+      
+//       // Get the content for the question (assuming getContent is available)
+//       const content = await getSolutions(titleSlug);
+
+//       // Parse the content and add it to the array
+//       allDescriptions.push({title: titleSlug, solution: content});
+//       console.log(titleSlug);
+      
+//     }
+
+//     // Save all descriptions to a single file
+//     await saveJsonLocally(JSON.stringify(allDescriptions), 'solutions');
+
+//     console.log('All problems processed and saved successfully.');
 //   } catch (error) {
-//     console.error('Error saving problems:', error);
-//   } finally {
-//     // Close the MongoDB connection
-//     mongoose.connection.close();
+//     console.error('Error processing problems:', error);
 //   }
 // }
 
-// // Call the function with the path to your JSON file
-// const jsonFilePath = 'src/interiewer/uploads/problems.json';
-// saveProblemsFromFile(jsonFilePath);
+// async function saveJsonLocally(jsonString :string, fileName : string) {
+//   try {
+//     // Parse the JSON string to ensure it's valid
+//     const jsonObject = JSON.parse(jsonString);
+    
+//     // Convert the object back to a formatted JSON string
+//     const formattedJson = JSON.stringify(jsonObject, null, 144);
+    
+//     // Define the file path
+//     const filePath = `src/interiewer/uploads/${fileName}.json`;
+    
+//     // Write the file
+//     await fs.writeFileSync(filePath, formattedJson, 'utf8');
+    
+//     console.log(`File saved successfully: ${filePath}`);
+//   } catch (error) {
+//     console.error(`Error saving JSON file for ${fileName}:`, error);
+//   }
+// }
+// processProblems();
