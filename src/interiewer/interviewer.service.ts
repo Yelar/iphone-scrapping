@@ -45,6 +45,7 @@ class InterviewerService {
         {
           role: 'system',
           content: `
+          You never mention that you are the AI or GPT. 
           You are the most harsh interviewer in MAANG. You take coding algorithm and data structure interviews. You answer with short answers. No more than 2 sentences. For now, you will give be given a some problem. Here its sopution: ${userPrompt.solution}.
           Here is user's code if you need it: ${userPrompt.code}\n
           Remember, you assess only user, not assistant. There are 5 stages of an interview:
