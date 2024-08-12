@@ -37,7 +37,6 @@ class InterviewerController {
       const ans = await this.interviewerService.checkSolution(id);
       res.status(201).json(ans);
     } catch (error: any) {
-      console.log("blya");
       res.status(500).json({ error: error.message });
     }
   };
@@ -133,7 +132,7 @@ class InterviewerController {
         ws.send(JSON.parse(data));
       });
     } catch (error) {
-      ws.send(JSON.stringify({ error: 'Failed to process OpenAI stream' }));
+      ws.send(JSON.stringify({ error: 'Failed to process gemini stream' }));
     }
   }
 //HERE YOU LEFT

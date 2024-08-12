@@ -1,8 +1,7 @@
-import {  checkSolution, getContent, getQuestionInfo, getSnippets, getSolutions, streamedAudio, submitSolution, transcribeAndChat } from '..';
-import openai from '../openai';
+import {  checkSolution, getQuestionInfo, streamedAudio, submitSolution, transcribeAndChat, useGemini } from '..';
 import { CreateResponseDTO, SolutionDTO } from './dto/CreateResponse.dto';
-import { Problem } from './Models/problem';
 import { audioResponse, evalResponse, questionDescription, questionInfo, questionSnippets, questionSolution} from './types/response';
+import gemini from '../gemini';
 // import MessageModel, { IMessage } from './models/message';
 // import { AddMessageDto } from './dtos/AddMessageDto.dot';
 import fs from 'fs'
@@ -39,54 +38,44 @@ class InterviewerService {
 //     return MessageModel.find();
 //   }
   async create(userPrompt: any, callback: (data: any) => void) {
-    const stream = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
+    const model = gemini.getGenerativeModel({
+      model: "gemini-1.5-flash",  // Specify the Gemini model version
+      systemInstruction: `You never mention that you are the AI or GPT. 
+        You are the most harsh interviewer in MAANG. You take coding algorithm and data structure interviews. You answer with short answers. No more than 2 sentences. For now, you will give be given a some problem. Here its sopution: ${userPrompt.solution}.
+        Here is user's code if you need it: ${userPrompt.code}\n
+        Remember, you assess only user, not assistant. There are 5 stages of an interview:
+        0) problem initiation (You explain problem statement in short and participant asks clarifying questions and thinks of edge cases (if not, you tell him to do so))
+        1) problem discussion (participant explains his solution (might be straightforward) -> However you hint the participant to explain a better solution, if not, it is ok)
+        2) writing a code
+        3) time and space complexity discussion
+        4) alternative approach discussion (Especially if participant's solution is not the best) (not mandatory, but if there is time left good thing to do)
+        Current stage is ${prompts[userPrompt.currentStage]}. You return answer ONLY in following json schema:
         {
-          role: 'system',
-          content: `
-          You never mention that you are the AI or GPT. 
-          You are the most harsh interviewer in MAANG. You take coding algorithm and data structure interviews. You answer with short answers. No more than 2 sentences. For now, you will give be given a some problem. Here its sopution: ${userPrompt.solution}.
-          Here is user's code if you need it: ${userPrompt.code}\n
-          Remember, you assess only user, not assistant. There are 5 stages of an interview:
-          0) problem initiation (You explain problem statement in short and participant asks clarifying questions and thinks of edge cases (if not, you tell him to do so))
-          1) problem discussion (participant explains his solution (might be straightforward) -> However you hint the participant to explain a better solution, if not, it is ok)
-          2) writing a code
-          3) time and space complexity discussion
-          4) alternative approach discussion (Especially if participant's solution is not the best) (not mandatory, but if there is time left good thing to do)
-          Current stage is ${prompts[userPrompt.currentStage]}. You return answer in following json format:
-          {
-            gptResponse: (Text response to the current message),
-            isOver: (true or false, boolean type expression that return if the current stage is over if you think so)
-          }`,
-        },
-        ...userPrompt.chat,
-      ],
-      stream: true,
-      response_format: {
-        type: 'json_object',
+          "Response": (Text response to the current message),
+        }
+        `,
+      generationConfig: { 
+        responseMimeType: "application/json"  // Set the response MIME type to JSON
       }
     });
+    const messages = [
+      ...userPrompt.chat,
+      `code if you need it ${userPrompt.code}`
+    ];
+    const prompt = JSON.stringify(messages);
+    const result = await model.generateContent(prompt);
+    const stream = result.response.text();
     try {
-      let gptResponse = "";
-      for await (const chunk of stream) {
-        if (chunk.choices && chunk.choices.length > 0 && chunk.choices[0].delta && chunk.choices[0].delta.content) {
-          // Check if content is not an empty object
-          const content = chunk.choices[0].delta.content;
-          if (Object.keys(content).length !== 0) {  // This checks if content is non-empty
-            gptResponse += content;
-            
-          }
-        }
-      }
-      callback(gptResponse);
+      console.log("lol", stream);
+      
+      callback(stream);
 
     //   await this.addMessage({
     //     message: gptResponse,
     //   }); 
     } catch (error) {
-      console.error('Error processing OpenAI stream', error);
-      throw new Error('Failed to process OpenAI stream');
+      console.error('Error processing gemini', error);
+      throw new Error('Failed to process gemini');
     }
   }
   async createResponse(resDto: CreateResponseDTO): Promise<audioResponse> {
@@ -183,14 +172,26 @@ class InterviewerService {
       },
       ...resDto.chat,
     ];
-    const response = await openai.chat.completions.create({
-      messages: messages,
-      model: "gpt-4o-mini",
-      response_format: {
-        type: 'json_object',
+    const me = JSON.stringify(messages);
+    const model = gemini.getGenerativeModel({
+      model: "gemini-1.5-flash",  // Specify the Gemini model version
+      systemInstruction: `You are the most harsh interviewer in MAANG. You take algotihmic interviews. You answer with short answers. You will be provided with interview transcript
+          Now, you evaluate user's performance, even if interviewee did not completed an interview. Remember, you evaluate only a user's performance on the interview, not assistant's. Also consider user's code. If it has only template for the problem, you willreturn bad score. 
+         . You MUST return answer in following json format:
+          {
+            positive : string[] (Positive sides(You can elaborate on them))
+            negative : string[] (negative sides(You can elaborate on them))
+            suggestions: string (suggestions for the future. Also here you can tell how to avoid mistakes and show how could the user do it to not to repeat mistakes)
+            chanceOfGettingJob: number (chance of getting into MAANG. 80-100 is good, while 50-79 and below is considered medium and below that is bery bad, if user did nothing valuable you return 0)
+          }
+          `,
+      generationConfig: { 
+        responseMimeType: "application/json"  // Set the response MIME type to JSON
       }
     });
-    const res = response.choices[0].message.content;
+    const result = await model.generateContent(me);
+    const response = result.response.text();
+    const res = response;
     let Res : evalResponse;
     if (res) {
       console.log(res);

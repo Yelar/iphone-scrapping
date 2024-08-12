@@ -9,6 +9,7 @@ import fs from "fs";
 import bodyParser from 'body-parser';
 import axios from 'axios'
 import mongoose from 'mongoose'
+import gemini from './gemini';
 import openai from './openai';
 import {toFile} from "openai/uploads"
 import InterviewerController from './interiewer/interviewer.controller';
@@ -51,6 +52,31 @@ io.on("connection", (socket) => {
 });
 
 
+
+export async function useGemini(prompt : any, code : string, solution : any, currentStage : any) {
+  prompt = JSON.stringify(prompt);
+  const model = gemini.getGenerativeModel({
+    model: "gemini-1.5-flash",  // Specify the Gemini model version
+    systemInstruction: `You never mention that you are the AI or GPT. You are the most harsh interviewer in MAANG. You take coding algorithm and data structure interviews. You answer with short answers. No more than 2 sentences. For now, you will give be given a some problem. Here its sopution: ${solution}.
+          Remember, you assess only user, not assistant. There are 5 stages of an interview:
+          0) problem initiation (You explain problem statement in short and participant asks clarifying questions and thinks of edge cases (if not, you tell him to do so))
+          1) problem discussion (participant explains his solution (might be straightforward) -> However you hint the participant to explain a better solution, if not, it is ok)
+          2) writing a code
+          3) time and space complexity discussion
+          4) alternative approach discussion (Especially if participant's solution is not the best) (not mandatory, but if there is time left good thing to do)
+          Current stage is ${prompts[currentStage]}. You return answer in following json format:
+          {
+            gptResponse: (Text response to the current message),
+            isOver: (true or false, boolean type expression that return if the current stage is over if you think so)
+          }
+            `,
+    generationConfig: { 
+      responseMimeType: "application/json"  // Set the response MIME type to JSON
+    }
+  });
+  const result = await model.generateContent(prompt + `code if you need: ${code}`);
+  return result.response.text();
+}
 // Default voice setting for text-to-speech
 const inputVoice = "echo"; // https://platform.openai.com/docs/guides/text-to-speech/voice-options
 const inputModel = "tts-1"; // https://platform.openai.com/docs/guides/text-to-speech/audio-quality
@@ -137,12 +163,10 @@ export async function transcribeAndChat(base64Audio: string, chatHistory : any, 
     const transcribedText = transcriptionResponse.text;
     console.log(`>> You said: ${transcribedText}`);
     // Prepare messages for the chatbot, including the transcribed text
-    const messages = [
-      {
-        role: "system",
-        content:
-          `You never mention that you are the AI or GPT. You are the most harsh interviewer in MAANG. You take coding algorithm and data structure interviews. You answer with short answers. No more than 2 sentences. For now, you will give be given a some problem. Here its sopution: ${solution}.
-          Remember, you asses only user, not assistant. There are 5 stages of an interview:
+    const model = gemini.getGenerativeModel({
+      model: "gemini-1.5-flash",  // Specify the Gemini model version
+      systemInstruction: `You never mention that you are the AI or GPT. You are the most harsh interviewer in MAANG. You take coding algorithm and data structure interviews. You answer with short answers. No more than 2 sentences. For now, you will give be given a some problem. Here its sopution: ${solution}.
+          Remember, you assess only user, not assistant. There are 5 stages of an interview:
           0) problem initiation (You explain problem statement in short and participant asks clarifying questions and thinks of edge cases (if not, you tell him to do so))
           1) problem discussion (participant explains his solution (might be straightforward) -> However you hint the participant to explain a better solution, if not, it is ok)
           2) writing a code
@@ -151,26 +175,24 @@ export async function transcribeAndChat(base64Audio: string, chatHistory : any, 
           Current stage is ${prompts[currentStage]}. You return answer in following json format:
           {
             gptResponse: (Text response to the current message),
-            isOver: (true or false, boolean type expression that return if the current stage is over if you think so)
           }
-          ` ,
-      },
+           `,
+      generationConfig: { 
+        responseMimeType: "application/json"  // Set the response MIME type to JSON
+      }
+    });
+    const messages = [
       ...chatHistory,
       { role: "user", content: transcribedText + `here is the code of the interviewee if the stage is coding: ${code}` },
     
     ];
 
     // Send messages to the chatbot and get the response
-    const chatResponse = await openai.chat.completions.create({
-      messages: messages,
-      model: "gpt-4o-mini",
-      response_format: {
-        type: 'json_object',
-      }
-    }); 
+    const chatResponse = await useGemini(messages, code, solution, currentStage);
     
     // Extract the chat response.
-    const chatResponseText = chatResponse.choices[0].message.content;
+    const chatResponseText = chatResponse;
+    console.log(chatResponseText);
     let result : any;
     if (chatResponseText)
     result = JSON.parse(chatResponseText);
@@ -639,31 +661,7 @@ export const checkSolution = async (submission_id: number) => {
 };
 
 
-//returns at most 5 most popular solutions
-export const getSolutions = async (questionName : string) => {
-  const ids = await getSolutionIds(questionName);
-  
-  let ans : string = "";
-  for (let i = 0; i < ids.length; i++) {
-    const tmp = await getSolutionById(ids[i].id);
-    ans += '\n';
-    ans += tmp;
-    
-  }
-  const chatResponse = await openai.chat.completions.create({
-    messages: [{
-        role: "system",
-        content:
-          `You are the most skillful competitive programmer and leetcode solver. You will be given a user's solutions to the particular leetcode problem. Generate clear and concise solution from them. Here it is ${ans}
-          ` ,
-      }],
-    model: "gpt-4o-mini"
-  }); 
-  const t = chatResponse.choices[0].message.content;
-  if (t)ans = t;
-  // console.log(await getSnippets("two-sum"));
-  return ans;
-}
+
 
 // async function processProblems() {
 //   try {
