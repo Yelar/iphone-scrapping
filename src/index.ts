@@ -172,7 +172,7 @@ export async function transcribeAndChat(base64Audio: string, chatHistory : any, 
           2) writing a code
           3) time and space complexity discussion
           4) alternative approach discussion (Especially if participant's solution is not the best) (not mandatory, but if there is time left good thing to do)
-          Current stage is ${prompts[currentStage]}. You return answer in following json format:
+          Current stage is ${prompts[currentStage]}. You return answer in following json schema:
           {
             gptResponse: (Text response to the current message),
           }
