@@ -51,11 +51,8 @@ class InterviewerService {
         4) alternative approach discussion (Especially if participant's solution is not the best) (not mandatory, but if there is time left good thing to do)
         Current stage is ${prompts[userPrompt.currentStage]}. You return answer ONLY in following json schema:
         {
-  "type": "object",
-  "properties": {
-    "gptResponse": { "type": "string" }
-  }
-}
+          "Response": (string),
+        }
         `,
       generationConfig: { 
         responseMimeType: "application/json"  // Set the response MIME type to JSON

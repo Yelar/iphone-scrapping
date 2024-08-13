@@ -66,11 +66,8 @@ export async function useGemini(prompt : any, code : string, solution : any, cur
           4) alternative approach discussion (Especially if participant's solution is not the best) (not mandatory, but if there is time left good thing to do)
           Current stage is ${prompts[currentStage]}. You return answer in following json format:
           {
-  "type": "object",
-  "properties": {
-    "gptResponse": { "type": "string" }
-  }
-}
+            gptResponse: (string)
+          }
             `,
     generationConfig: { 
       responseMimeType: "application/json"  // Set the response MIME type to JSON
@@ -176,13 +173,7 @@ export async function transcribeAndChat(base64Audio: string, chatHistory : any, 
           4) alternative approach discussion (Especially if participant's solution is not the best) (not mandatory, but if there is time left good thing to do)
           Current stage is ${prompts[currentStage]}. You return answer in following json schema:
           {
-  "type": "object",
-  "properties": {
-    "gptResponse": { "type": "string" }
-  }
-}
-          {
-            gptResponse: (Text response to the current message),
+            Response: (string),
           }
            `,
       generationConfig: { 
